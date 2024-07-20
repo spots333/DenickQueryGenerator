@@ -204,13 +204,18 @@ public class StringAnalyzer {
             }
         }
 
+        //we can figure out who won/lost, but we cannot figure out
+        //who is who, so we cannot determine if our user won or lost
+        //that game, since we don't know who our user is.
+        //(which is what that value represents)
+        //This can be fixed if we can 100% determine if the first player in the stats column is the user.
         if (didFirstGuyWin) {
-            firstColumn.add("W");
-            secondColumn.add("L");
+            firstColumn.add(""); //"W"
+            secondColumn.add(""); //"L"
         }
         else {
-            firstColumn.add("L");
-            secondColumn.add("W");
+            firstColumn.add(""); //"L"
+            secondColumn.add(""); //"W"
         }
 
         // Convert to String arrays
