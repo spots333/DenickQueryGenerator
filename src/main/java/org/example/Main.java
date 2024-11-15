@@ -7,15 +7,14 @@ import java.nio.file.StandardCopyOption;
 
 public class Main {
     public static File filepath;
-    public static Display d;
 
     // wait time after the game end stats are printed before the click here to watch replay is.
     public static final long WAIT_TIME = 10L;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Program starty :)");
-        d = new Display();
 
-        LogFileMonitor.run();
+        WebLogManager hey = new WebLogManager();
+        hey.start();
     }
 }

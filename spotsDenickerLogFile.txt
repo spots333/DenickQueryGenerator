@@ -1,0 +1,2 @@
+C:\Users\kirus\.lunarclient\offline\multiver\logs
+C:\Users\kirus\AppData\Roaming\.minecraft\logs
