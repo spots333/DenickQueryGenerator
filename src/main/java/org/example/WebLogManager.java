@@ -24,6 +24,8 @@ public class WebLogManager {
     private HttpServer server;
     private File lockFile;
     private int port;
+    private String actualLunarPath; // To store the actual valid path
+    private String actualBadlionPath; // To store the actual valid path
 
     public void start() throws IOException {
         if (isAlreadyRunning()) {
@@ -254,20 +256,40 @@ public class WebLogManager {
         // Get current user
         String username = System.getProperty("user.name");
 
-        // Set default paths
-        lunarPath = "C:\\Users\\" + username + "\\.lunarclient\\offline\\multiver\\logs";
-        badlionPath = "C:\\Users\\" + username + "\\AppData\\Roaming\\.minecraft\\logs\\blclient\\chat";
+        // Set default paths with both C: and D: options
+        String lunarPathC = "C:\\Users\\" + username + "\\.lunarclient\\offline\\multiver\\logs";
+        String lunarPathD = "D:\\Users\\" + username + "\\.lunarclient\\offline\\multiver\\logs";
+        String badlionPathC = "C:\\Users\\" + username + "\\AppData\\Roaming\\.minecraft\\logs\\blclient\\minecraft";
+        String badlionPathD = "D:\\Users\\" + username + "\\AppData\\Roaming\\.minecraft\\logs\\blclient\\minecraft";
+
+        // Check Lunar paths
+        if (new File(lunarPathC).exists()) {
+            actualLunarPath = lunarPathC;
+        } else if (new File(lunarPathD).exists()) {
+            actualLunarPath = lunarPathD;
+        } else {
+            actualLunarPath = lunarPathC; // Default to C: path for display
+        }
+
+        // Check Badlion paths
+        if (new File(badlionPathC).exists()) {
+            actualBadlionPath = badlionPathC;
+        } else if (new File(badlionPathD).exists()) {
+            actualBadlionPath = badlionPathD;
+        } else {
+            actualBadlionPath = badlionPathC; // Default to C: path for display
+        }
 
         // Load existing paths from file
         loadPathsFromFile();
 
-        // Check if Lunar and Badlion paths exist on machine but not in file
-        if (new File(lunarPath).exists() && !customPaths.contains(lunarPath)) {
-            customPaths.add(lunarPath);
+        // Check if paths exist and add to customPaths if they do
+        if (new File(actualLunarPath).exists() && !customPaths.contains(actualLunarPath)) {
+            customPaths.add(actualLunarPath);
             savePathsToFile();
         }
-        if (new File(badlionPath).exists() && !customPaths.contains(badlionPath)) {
-            customPaths.add(badlionPath);
+        if (new File(actualBadlionPath).exists() && !customPaths.contains(actualBadlionPath)) {
+            customPaths.add(actualBadlionPath);
             savePathsToFile();
         }
     }
@@ -341,23 +363,43 @@ public class WebLogManager {
 
         // Lunar Client section
         html.append("<h3>Lunar Logs file Path: ");
-        html.append(lunarPath);
-        html.append(" <span class='status ").append(isPathValid(lunarPath) ? "found'>FOUND" : "not-found'>NOT FOUND").append("</span></h3>");
+        html.append(actualLunarPath);
+        if (new File(actualLunarPath).exists()) {
+            html.append(" <span class='status found'>FOUND</span>");
+        } else {
+            html.append(" <span class='status not-found'>NOT FOUND</span>");
+            html.append("<br><small style='color: #666; margin-left: 20px;'>");
+            html.append("Checked both C: and D: drives</small>");
+        }
+        html.append("</h3>");
 
         // Badlion section
         html.append("<h3>Badlion Logs file Path: ");
-        html.append(badlionPath);
-        html.append(" <span class='status ").append(isPathValid(badlionPath) ? "found'>FOUND" : "not-found'>NOT FOUND").append("</span></h3>");
+        html.append(actualBadlionPath);
+        if (new File(actualBadlionPath).exists()) {
+            html.append(" <span class='status found'>FOUND</span>");
+        } else {
+            html.append(" <span class='status not-found'>NOT FOUND</span>");
+            html.append("<br><small style='color: #666; margin-left: 20px;'>");
+            html.append("Checked both C: and D: drives</small>");
+        }
+        html.append("</h3>");
 
-        // Custom paths section
+        // Custom paths section - now filtering out Lunar and Badlion paths
         html.append("<h3>Custom Logs:</h3>");
         html.append("<ul>");
+        boolean hasCustomPaths = false;
         for (String path : customPaths) {
-            if (!path.equals(lunarPath) && !path.equals(badlionPath)) {
+            // Skip if path is either Lunar or Badlion path
+            if (!path.equals(actualLunarPath) && !path.equals(actualBadlionPath)) {
+                hasCustomPaths = true;
                 html.append("<li>").append(path);
                 html.append(" <span class='status ").append(isPathValid(path) ? "found'>FOUND" : "not-found'>NOT FOUND").append("</span>");
                 html.append("</li>");
             }
+        }
+        if (!hasCustomPaths) {
+            html.append("<li><i>No custom paths added</i></li>");
         }
         html.append("</ul>");
 
