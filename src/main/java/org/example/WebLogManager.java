@@ -405,7 +405,7 @@ public class WebLogManager {
 
         // Add new path form
         html.append("<form action='/addPath' method='post'>");
-        html.append("<input type='text' name='path' placeholder='Enter new path' size='50'>");
+        html.append("<input type='text' name='path' placeholder='Enter new path' size='50' autocomplete='off'>");
         html.append("<input type='submit' value='Add Path'>");
         html.append("</form>");
 
@@ -414,7 +414,7 @@ public class WebLogManager {
         html.append("<h2>Query Generator</h2>");
         html.append("<form action='/search' method='post' onsubmit='return showLoading();'>");
         html.append("<input type='text' name='username' placeholder='Enter Minecraft username' ");
-        html.append("pattern='^[a-zA-Z0-9_]{2,16}$' ");
+        html.append("pattern='^[a-zA-Z0-9_]{2,16}$' autocomplete='off' ");
         html.append("title='Username must be 2-16 characters long and contain only letters, numbers, and underscores' required>");
         html.append("<input type='submit' value='Search'>");
         html.append("</form>");
